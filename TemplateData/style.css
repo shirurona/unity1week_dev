@@ -1,0 +1,163 @@
+/* ---- ページ全体: クリーム背景にピンク水玉がゆっくり流れる ---- */
+body {
+  padding: 0;
+  margin: 0;
+  min-height: 100vh;
+  background-color: #FFF6EC;
+  background-image:
+    radial-gradient(circle, #FFC9DE 14px, transparent 15px),
+    radial-gradient(circle, #FFB3C9 9px, transparent 10px);
+  background-size: 120px 120px, 120px 120px;
+  background-position: 0 0, 60px 60px;
+  animation: dot-scroll 16s linear infinite;
+  font-family: 'Hiragino Maru Gothic ProN', 'BIZ UDGothic', 'Meiryo', sans-serif;
+}
+@keyframes dot-scroll {
+  from { background-position: 0 0, 60px 60px }
+  to   { background-position: 120px 120px, 180px 180px }
+}
+
+/* ---- canvasを包む白いカード枠 ---- */
+#unity-container { position: absolute }
+#unity-container.unity-desktop {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: #FFFFFF;
+  padding: 14px;
+  border: 3px solid #FFC9DE;
+  border-radius: 28px;
+  box-shadow: 0 12px 32px rgba(255, 143, 181, 0.35);
+}
+#unity-container.unity-mobile {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+#unity-canvas { background: #231F20; display: block; border-radius: 16px }
+.unity-mobile #unity-canvas { width: 100%; height: 100%; border-radius: 0 }
+
+/* ---- フッター: 左にタイトル、右に全画面ボタン ---- */
+#unity-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+.unity-mobile #unity-footer { display: none }
+#unity-build-title {
+  color: #8B5E4F;
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+#unity-fullscreen-button {
+  cursor: pointer;
+  padding: 8px 20px;
+  border-radius: 999px;
+  border: 2px solid #FFB3C9;
+  background: linear-gradient(180deg, #FFE1EC, #FFC9DE);
+  color: #8B5E4F;
+  font-weight: bold;
+  font-size: 14px;
+  user-select: none;
+}
+#unity-fullscreen-button:hover { filter: brightness(1.05) }
+
+#unity-warning {
+  position: absolute;
+  left: 50%;
+  top: 5%;
+  transform: translate(-50%);
+  background: #FFFFFF;
+  border: 2px solid #FFB3C9;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 10px;
+  display: none;
+}
+
+/* ---- かわいいロード画面 ---- */
+
+/* 全画面カバー: クリーム背景に2層のピンク水玉を斜めスクロール（UVスクロール風） */
+#loading-cover {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  background-color: #FFF6EC;
+  background-image:
+    radial-gradient(circle, #FFC9DE 14px, transparent 15px),
+    radial-gradient(circle, #FFB3C9 9px, transparent 10px);
+  background-size: 120px 120px, 120px 120px;
+  background-position: 0 0, 60px 60px;
+  animation: dot-scroll 8s linear infinite;
+  transition: opacity 0.6s ease;
+}
+#loading-cover.loading-done { opacity: 0; pointer-events: none }
+
+/* 丸形アイコン: くるくる回転 */
+#loading-icon {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  filter: drop-shadow(0 6px 12px rgba(255, 143, 181, 0.45));
+  animation: icon-spin 2.6s linear infinite;
+}
+@keyframes icon-spin {
+  from { transform: rotate(0deg) }
+  to   { transform: rotate(360deg) }
+}
+
+/* 「ロード中...」: 1文字ずつぴょこぴょこ跳ねる */
+#loading-text {
+  font-size: 26px;
+  font-weight: bold;
+  color: #8B5E4F;
+  letter-spacing: 4px;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.8);
+}
+.loading-char { display: inline-block; animation: char-bounce 1.4s ease-in-out infinite }
+.loading-char:nth-child(1) { animation-delay: 0s }
+.loading-char:nth-child(2) { animation-delay: 0.09s }
+.loading-char:nth-child(3) { animation-delay: 0.18s }
+.loading-char:nth-child(4) { animation-delay: 0.27s }
+.loading-char:nth-child(5) { animation-delay: 0.36s }
+.loading-char:nth-child(6) { animation-delay: 0.45s }
+.loading-char:nth-child(7) { animation-delay: 0.54s }
+@keyframes char-bounce {
+  0%, 50%, 100% { transform: translateY(0) }
+  25%           { transform: translateY(-12px) }
+}
+
+/* 丸角プログレスバー: ピンクグラデ */
+#loading-progress-empty {
+  width: 320px;
+  max-width: 70vw;
+  height: 24px;
+  background: #FFFFFF;
+  border: 3px solid #FFB3C9;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(255, 143, 181, 0.35);
+}
+#loading-progress-full {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #FFC9DE, #FF8FB5);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body, #loading-cover, #loading-icon, .loading-char { animation: none }
+}

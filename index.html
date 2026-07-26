@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>unity1week</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+  </head>
+  <body>
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width=960 height=600 tabindex="-1"></canvas>
+      <div id="unity-warning"> </div>
+      <div id="unity-footer">
+        <div id="unity-build-title">unity1week</div>
+        <div id="unity-fullscreen-button">⛶ 全画面</div>
+      </div>
+    </div>
+    <!-- かわいいロード画面（読み込み完了でフェードアウト） -->
+    <div id="loading-cover">
+      <img id="loading-icon" src="TemplateData/loading-icon.png" alt="">
+      <div id="loading-text">
+        <span class="loading-char">ロ</span><span class="loading-char">ー</span><span class="loading-char">ド</span><span class="loading-char">中</span><span class="loading-char loading-dot">.</span><span class="loading-char loading-dot">.</span><span class="loading-char loading-dot">.</span>
+      </div>
+      <div id="loading-progress-empty">
+        <div id="loading-progress-full"></div>
+      </div>
+    </div>
+    <script>
+      var canvas = document.querySelector("#unity-canvas");
+
+      // Shows a temporary message banner/ribbon for a few seconds, or
+      // a permanent error message on top of the canvas if type=='error'.
+      // If type=='warning', a yellow highlight color is used.
+      // Modify or remove this function to customize the visually presented
+      // way that non-critical warnings and error messages are presented to the
+      // user.
+      function unityShowBanner(msg, type) {
+        var warningBanner = document.querySelector("#unity-warning");
+        function updateBannerVisibility() {
+          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+        }
+        var div = document.createElement('div');
+        div.innerHTML = msg;
+        warningBanner.appendChild(div);
+        if (type == 'error') div.style = 'background: red; padding: 10px;';
+        else {
+          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+          setTimeout(function() {
+            warningBanner.removeChild(div);
+            updateBannerVisibility();
+          }, 5000);
+        }
+        updateBannerVisibility();
+      }
+
+      var buildUrl = "Build";
+      var loaderUrl = buildUrl + "/WebGL.loader.js";
+      var config = {
+        arguments: [],
+        dataUrl: buildUrl + "/WebGL.data.gz",
+        frameworkUrl: buildUrl + "/WebGL.framework.js.gz",
+        codeUrl: buildUrl + "/WebGL.wasm.gz",
+        streamingAssetsUrl: "StreamingAssets",
+        companyName: "We love fire-type",
+        productName: "unity1week",
+        productVersion: "0.1.0",
+        showBanner: unityShowBanner,
+      };
+
+      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+        // Mobile device style: fill the whole browser client area with the game canvas:
+
+        var meta = document.createElement('meta');
+        meta.name = 'viewport';
+        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+        document.getElementsByTagName('head')[0].appendChild(meta);
+        document.querySelector("#unity-container").className = "unity-mobile";
+        canvas.className = "unity-mobile";
+
+
+      } else {
+        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+        canvas.style.width = "960px";
+        canvas.style.height = "600px";
+      }
+
+
+      var script = document.createElement("script");
+      script.src = loaderUrl;
+      script.onload = () => {
+        createUnityInstance(canvas, config, (progress) => {
+          document.querySelector("#loading-progress-full").style.width = 100 * progress + "%";
+              }).then((unityInstance) => {
+                // ロード画面をふわっとフェードアウトしてから取り除く
+                var loadingCover = document.querySelector("#loading-cover");
+                loadingCover.classList.add("loading-done");
+                loadingCover.addEventListener("transitionend", () => loadingCover.remove());
+                document.querySelector("#unity-fullscreen-button").onclick = () => {
+                  unityInstance.SetFullscreen(1);
+                };
+              }).catch((message) => {
+                alert(message);
+              });
+            };
+
+      document.body.appendChild(script);
+
+    </script>
+  </body>
+</html>
